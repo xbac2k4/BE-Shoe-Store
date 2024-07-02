@@ -5,7 +5,7 @@ const Scheme = mongoose.Schema;
 const Users = new Scheme({
     fullname: { type: String,required: true, maxlength: 255 },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, maxLeght: 255 },
+    password: { type: String, required: true, maxLength: 255 },
     avatar: { type: String, default: ""},
     gender: { type: Number, default: 0 },
     address: { type: String, required: true},
