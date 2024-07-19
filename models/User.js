@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Role = require('./Role');
 const Scheme = mongoose.Schema;
 
-const Users = new Scheme({
+const User = new Scheme({
     fullname: { type: String,required: true, maxlength: 255 },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, maxLength: 255 },
@@ -16,4 +16,4 @@ const Users = new Scheme({
     timestamps: true,
 })
 
-module.exports = mongoose.model('user', Users)
+module.exports = mongoose.model('user', User)
