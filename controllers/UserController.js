@@ -1,32 +1,17 @@
 const UserService = require("../services/UserService");
+const HttpResponse = require("../utils/HttpResponse");
 
 class UserController {
     postLogin = async (req, res) => {
         const { email, password } = req.body;
-        console.log(req.body);
         try {
             const user = await new UserService().login(email, password);
             if (user) {
-                res.json({
-                    status: user.status,
-                    message: user.message,
-                    data: user.data,
-                    token: user.token,
-                    refreshToken: user.refreshToken
-                })
+                return res.json(HttpResponse.resultAuth(user));
             }
-            console.log(
-                {
-                    status: user.status,
-                    message: user.message,
-                    data: user.data,
-                    token: user.token,
-                    refreshToken: user.refreshToken
-                }
-            );
         } catch (error) {
             console.log(error);
-            res.status(500).json({ status: 500, message: "Internal server error" });
+            return res.json(HttpResponse.error(error));
         }
     }
     postRegister = async (req, res) => {
@@ -45,15 +30,11 @@ class UserController {
             console.log(req.body);
             const user = await new UserService().register(fullname, email, password, address);
             if (user) {
-                return res.json({
-                    status: user.status,
-                    message: user.message,
-                    data: user.data
-                })
+                return res.json(HttpResponse.result(user))
             }
         } catch (error) {
             console.log(error);
-            res.status(500).json({ status: 500, message: "Internal server error" });
+            return res.json(HttpResponse.error(error));
         }
     }
 }

@@ -1,6 +1,7 @@
 const Users = require("../models/User");
 const JWT = require('jsonwebtoken');
 const role = require('../models/Role');
+const HttpResponse = require("../utils/HttpResponse");
 const SECRETKEY = "ShoeStore"
 
 class UserService {
@@ -9,61 +10,22 @@ class UserService {
             const user = await Users.findOne({ email, password }).populate('roleID')
             if (user) {
                 //Token người dùng sẽ sử dụng gửi lên trên header mỗi lần muốn gọi api
-                const token = JWT.sign({ id: user._id }, SECRETKEY, { expiresIn: '1h' });
+                const token = JWT.sign({ id: user._id }, SECRETKEY, { expiresIn: '1h' })
                 //Khi token hết hạn, người dùng sẽ call 1 api khác để lấy token mới
                 //Lúc này người dùng sẽ truyền refreshToken lên để nhận về 1 cặp token,refreshToken mới
                 //Nếu cả 2 token đều hết hạn người dùng sẽ phải thoát app và đăng nhập lại
                 const refreshToken = JWT.sign({ id: user._id }, SECRETKEY, { expiresIn: '1d' })
                 //expiresIn thời gian token
-                return {
-                    status: 200,
-                    message: "Login successful",
-                    data: user,
-                    token: token,
-                    refreshToken: refreshToken
-                }
+                return HttpResponse.auth(user, token, refreshToken)
             } else {
-                return {
-                    status: 400,
-                    message: "Email or password is incorrect",
-                    data: null
-                }
+                return HttpResponse.authFail()
             }
         } catch (error) {
-            console.log(error);
+            return HttpResponse.error(error)
         }
     }
     register = async (fullname, email, password, address) => {
         try {
-            // isEmpty is true
-            if ( fullname === null || email === null || password === null || address === null) {
-                return {
-                    status: 400,
-                    message: "Invalid email or username or password or address",
-                    data: null
-                }
-            }
-            // // username
-            // const existingName = await Users.findOne({
-            //     fullname: fullname
-            // });    
-            // if (existingName) {
-            //     return {
-            //         status: 400,
-            //         message: "Name already exists",
-            //         data: null
-            //     };
-            // }
-            // email
-            const re = /^[a-zA-Z0-9_!#$%&‘*\=\+\/\?^{|}~]+([\.-]?[a-zA-Z0-9_!#$%&‘*\=\+\/\?^{|}~]+)*@\w+([\.-]?\w+)*(\.\w{2,50})+$/;
-            const testEmail = re.test(email);
-            if (!testEmail) { 
-                return {
-                    status: 400,
-                    message: "Invalid email",
-                    data: null
-                };
-            }
             const existingEmail = await Users.findOne({
                 email: email
             });
